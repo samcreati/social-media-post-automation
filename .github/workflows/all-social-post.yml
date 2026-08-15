@@ -1,0 +1,56 @@
+name: All Social Media Auto Post
+
+on:
+  schedule:
+    # Daily 9:00 AM IST
+    - cron: '30 3 * * *'
+    # Daily 6:00 PM IST
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    
+    - name: Post to All Platforms
+      env:
+        # Facebook
+        FACEBOOK_TOKEN: ${{ secrets.FACEBOOK_TOKEN }}
+        FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+        # Instagram
+        INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+        INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+        # LinkedIn
+        LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
+        # YouTube
+        YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+        YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+        # Pinterest
+        PINTEREST_TOKEN: ${{ secrets.PINTEREST_TOKEN }}
+        PINTEREST_BOARD_ID: ${{ secrets.PINTEREST_BOARD_ID }}
+        # TikTok
+        TIKTOK_TOKEN: ${{ secrets.TIKTOK_TOKEN }}
+        TIKTOK_USER_ID: ${{ secrets.TIKTOK_USER_ID }}
+      run: python auto_post_all.py
+    
+    - name: Upload Logs
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: post-logs
+        path: post_logs.json
